@@ -60,12 +60,22 @@ instead — handy if you want each plugin version pinned to a specific pack.)
 
 | Command | Description | Permission |
 |---------|-------------|------------|
-| `/flightcharm give [player] [amount]` | Give Flight Charm(s) | `flightcharm.give` (op) |
+| `/flightcharm give [player] [minutes] [amount]` | Give charms of a chosen duration | `flightcharm.give` (op) |
 | `/flightcharm time` | Show your remaining flight time | — |
 | `/flightcharm reload` | Reload `config.yml` | `flightcharm.reload` (op) |
 
+Each charm stores its own duration. `minutes` defaults to the config `flight-seconds`
+and accepts fractions (e.g. `0.5` = 30s). Examples:
+
+- `/fc give Kez 5` — one 5-minute charm
+- `/fc give Kez 30 3` — three 30-minute charms
+- `/fc give Kez` — one charm at the default duration
+
 Alias: `/fc`. (Players obtain charms via `/flightcharm give` for now — add a crafting
 recipe later if you want survival acquisition.)
+
+> Note: the `max-seconds` cap still applies to a player's *total* stored time, so a
+> charm longer than `max-seconds` is clipped to that cap when used.
 
 ## Configuration
 

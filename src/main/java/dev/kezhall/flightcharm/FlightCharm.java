@@ -46,9 +46,10 @@ import java.util.UUID;
  */
 public final class FlightCharm extends JavaPlugin implements Listener {
 
-    private NamespacedKey charmKey;       // marks an ItemStack as a charm
-    private NamespacedKey remainingKey;   // stores a player's remaining seconds
-    private NamespacedKey itemModelKey;   // resource-pack item model id
+    private NamespacedKey charmKey;        // marks an ItemStack as a charm
+    private NamespacedKey charmSecondsKey; // per-charm flight duration (seconds)
+    private NamespacedKey remainingKey;    // stores a player's remaining seconds
+    private NamespacedKey itemModelKey;    // resource-pack item model id
 
     // Config
     private int flightSeconds;
@@ -74,6 +75,7 @@ public final class FlightCharm extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         charmKey = new NamespacedKey(this, "charm");
+        charmSecondsKey = new NamespacedKey(this, "charm_seconds");
         remainingKey = new NamespacedKey(this, "remaining");
         itemModelKey = new NamespacedKey("flightcharm", "flight_charm");
 
@@ -337,6 +339,9 @@ public final class FlightCharm extends JavaPlugin implements Listener {
             return; // don't waste a charm in creative/spectator
         }
 
+        // How much time this particular charm grants (falls back to the config default).
+        int grant = charmSeconds(inHand);
+
         // Consume one charm.
         int newAmount = inHand.getAmount() - 1;
         inHand.setAmount(Math.max(newAmount, 0));
@@ -344,7 +349,7 @@ public final class FlightCharm extends JavaPlugin implements Listener {
 
         // Add flight time (capped).
         UUID id = player.getUniqueId();
-        int next = Math.min(maxSeconds, remaining.getOrDefault(id, 0) + flightSeconds);
+        int next = Math.min(maxSeconds, remaining.getOrDefault(id, 0) + grant);
         remaining.put(id, next);
         player.getPersistentDataContainer().set(remainingKey, PersistentDataType.INTEGER, next);
         player.setAllowFlight(true);
@@ -360,7 +365,20 @@ public final class FlightCharm extends JavaPlugin implements Listener {
         return item.getItemMeta().getPersistentDataContainer().has(charmKey, PersistentDataType.BYTE);
     }
 
-    private ItemStack createCharm(int amount) {
+    /** The flight duration baked into a charm, or the config default for older/plain charms. */
+    private int charmSeconds(ItemStack item) {
+        if (item != null && item.hasItemMeta()) {
+            Integer s = item.getItemMeta().getPersistentDataContainer()
+                    .get(charmSecondsKey, PersistentDataType.INTEGER);
+            if (s != null && s > 0) {
+                return s;
+            }
+        }
+        return flightSeconds;
+    }
+
+    private ItemStack createCharm(int amount, int seconds) {
+        int secs = seconds > 0 ? seconds : flightSeconds;
         ItemStack item = new ItemStack(Material.FEATHER, Math.max(1, amount));
         ItemMeta meta = item.getItemMeta();
         meta.displayName(Component.text("Flight Charm", NamedTextColor.AQUA)
@@ -368,7 +386,7 @@ public final class FlightCharm extends JavaPlugin implements Listener {
         meta.lore(List.of(
                 Component.text("Right-click to gain flight.", NamedTextColor.GRAY)
                         .decoration(TextDecoration.ITALIC, false),
-                Component.text("Grants " + formatTime(flightSeconds) + " of flight time.", NamedTextColor.DARK_GRAY)
+                Component.text("Grants " + formatTime(secs) + " of flight time.", NamedTextColor.DARK_GRAY)
                         .decoration(TextDecoration.ITALIC, false)
         ));
         // Only apply the custom item-model when the pack is configured; otherwise the
@@ -378,6 +396,7 @@ public final class FlightCharm extends JavaPlugin implements Listener {
         }
         meta.setEnchantmentGlintOverride(Boolean.TRUE);  // subtle shimmer
         meta.getPersistentDataContainer().set(charmKey, PersistentDataType.BYTE, (byte) 1);
+        meta.getPersistentDataContainer().set(charmSecondsKey, PersistentDataType.INTEGER, secs);
         item.setItemMeta(meta);
         return item;
     }
@@ -408,6 +427,7 @@ public final class FlightCharm extends JavaPlugin implements Listener {
                     sender.sendMessage(Component.text("You don't have permission.", NamedTextColor.RED));
                     return true;
                 }
+                // /flightcharm give [player] [minutes] [amount]
                 Player target;
                 if (args.length >= 2) {
                     target = Bukkit.getPlayerExact(args[1]);
@@ -418,21 +438,30 @@ public final class FlightCharm extends JavaPlugin implements Listener {
                 } else if (sender instanceof Player p) {
                     target = p;
                 } else {
-                    sender.sendMessage(Component.text("Usage: /flightcharm give <player> [amount]", NamedTextColor.RED));
+                    sender.sendMessage(Component.text("Usage: /flightcharm give <player> [minutes] [amount]", NamedTextColor.RED));
                     return true;
                 }
-                int amount = 1;
+                int seconds = flightSeconds;
                 if (args.length >= 3) {
                     try {
-                        amount = Math.max(1, Integer.parseInt(args[2]));
+                        seconds = Math.max(1, (int) Math.round(Double.parseDouble(args[2]) * 60));
+                    } catch (NumberFormatException ignored) {
+                        sender.sendMessage(Component.text("Minutes must be a number.", NamedTextColor.RED));
+                        return true;
+                    }
+                }
+                int amount = 1;
+                if (args.length >= 4) {
+                    try {
+                        amount = Math.max(1, Integer.parseInt(args[3]));
                     } catch (NumberFormatException ignored) {
                         sender.sendMessage(Component.text("Amount must be a number.", NamedTextColor.RED));
                         return true;
                     }
                 }
-                target.getInventory().addItem(createCharm(amount));
-                sender.sendMessage(Component.text("Gave " + amount + " Flight Charm(s) to "
-                        + target.getName() + ".", NamedTextColor.GREEN));
+                target.getInventory().addItem(createCharm(amount, seconds));
+                sender.sendMessage(Component.text("Gave " + amount + " Flight Charm(s) ("
+                        + formatTime(seconds) + " each) to " + target.getName() + ".", NamedTextColor.GREEN));
                 return true;
             }
             case "time" -> {
@@ -451,7 +480,7 @@ public final class FlightCharm extends JavaPlugin implements Listener {
                 return true;
             }
             default -> {
-                sender.sendMessage(Component.text("Usage: /flightcharm <give|time|reload> [player] [amount]",
+                sender.sendMessage(Component.text("Usage: /flightcharm <give|time|reload> [player] [minutes] [amount]",
                         NamedTextColor.YELLOW));
                 return true;
             }

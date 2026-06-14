@@ -1,14 +1,14 @@
 name: FlightCharm
 version: '${version}'
 main: dev.kezhall.flightcharm.FlightCharm
-description: A consumable charm that grants timed flight, with a boss-bar + action-bar timer.
+description: A consumable charm that grants timed flight, with a boss-bar timer.
 author: Kez
 website: https://github.com/kezdev
 api-version: '26.1'
 commands:
   flightcharm:
     description: Get a charm, check your flight time, or reload config.
-    usage: /flightcharm <give|time|reload> [player] [amount]
+    usage: /flightcharm <give|time|reload> [player] [minutes] [amount]
     aliases: [fc]
 permissions:
   flightcharm.give:
