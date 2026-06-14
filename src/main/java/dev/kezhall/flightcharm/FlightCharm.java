@@ -38,7 +38,7 @@ import java.util.UUID;
 
 /**
  * FlightCharm — a consumable item (right-click) that grants timed creative-style
- * flight, shown with a draining boss bar and an action-bar countdown.
+ * flight, shown with a draining boss bar timer.
  *
  * The custom look comes from a resource pack: the item carries the
  * "flightcharm:flight_charm" item-model component (see the resourcepack/ folder).
@@ -184,8 +184,6 @@ public final class FlightCharm extends JavaPlugin implements Listener {
             bar.name(label);
             bar.progress(progress);
         }
-
-        player.sendActionBar(label);
     }
 
     private void expire(Player player) {
@@ -205,7 +203,7 @@ public final class FlightCharm extends JavaPlugin implements Listener {
         }
 
         clearBar(player);
-        player.sendActionBar(Component.text("✈ Flight time has run out.", NamedTextColor.RED));
+        player.sendMessage(Component.text("✈ Flight time has run out.", NamedTextColor.RED));
     }
 
     private void clearBar(Player player) {

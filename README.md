@@ -1,15 +1,15 @@
 # FlightCharm
 
 A Paper plugin for Minecraft **26.1+**. A consumable **Flight Charm** that grants
-timed creative-style flight, shown with a draining **boss bar** and an **action-bar
-countdown**. Includes a custom item texture via a small resource pack.
+timed creative-style flight, shown with a draining **boss bar** timer. Includes a
+custom item texture via a small resource pack.
 
 By [kezdev](https://github.com/kezdev).
 
 ## What it does
 
 - Right-click a Flight Charm to gain flight. One charm = 10 minutes by default.
-- A boss bar drains over the duration, and an action-bar timer shows `✈ Flight  9:59`.
+- A boss bar at the top drains over the duration, showing `✈ Flight  9:59`.
 - Using more charms stacks time (up to a configurable cap).
 - When time runs out, flight ends and you get a few seconds of Slow Falling for a soft landing.
 - Remaining time is saved per player, so it survives logout and restarts.
