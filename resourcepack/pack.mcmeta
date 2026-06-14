@@ -1,0 +1,8 @@
+{
+  "pack": {
+    "description": "FlightCharm — custom item textures",
+    "pack_format": 84,
+    "min_format": 60,
+    "max_format": 200
+  }
+}

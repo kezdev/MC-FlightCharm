@@ -1,0 +1,20 @@
+# FlightCharm configuration — by kezdev: https://github.com/kezdev
+
+flight-seconds: 600     # how many seconds of flight one charm grants (600 = 10 min)
+max-seconds: 3600       # cap on total stored flight time (stacking charms)
+slow-fall-seconds: 8    # seconds of Slow Falling given when flight runs out (soft landing)
+flight-particle: CLOUD  # particle ring at your feet while flying (Bukkit Particle name); NONE to disable
+
+# Custom texture (optional). When disabled, the charm looks like a named Feather and
+# works everywhere with no setup. To enable the custom look, host the provided
+# FlightCharm-ResourcePack.zip publicly — e.g. commit it to your repo and use the raw
+# URL: https://raw.githubusercontent.com/kezdev/MC-FlightCharm/main/FlightCharm-ResourcePack.zip
+# (or a GitHub Release asset URL) — then set enabled: true and fill in url + sha1 below.
+# The plugin offers the pack to players on join (it stacks alongside other packs).
+# IMPORTANT: if you change the pack file, update the sha1 (run: sha1sum the zip).
+resource-pack:
+  enabled: false
+  url: ""
+  sha1: ""
+  required: false   # true = players must accept it (decline = disconnected)
+  prompt: "Install the FlightCharm pack to see the charm's custom texture."
