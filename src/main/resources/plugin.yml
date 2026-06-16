@@ -8,7 +8,7 @@ api-version: '26.1'
 commands:
   flightcharm:
     description: Get a charm, check your flight time, or reload config.
-    usage: /flightcharm <give|time|reload> [player] [minutes] [amount]
+    usage: /flightcharm <give|clear|time|reload> [player] [minutes] [amount]
     aliases: [fc]
 permissions:
   flightcharm.use:
@@ -16,6 +16,9 @@ permissions:
     default: true
   flightcharm.give:
     description: Allows giving Flight Charms.
+    default: op
+  flightcharm.clear:
+    description: Allows clearing a player's flight time.
     default: op
   flightcharm.reload:
     description: Allows reloading the FlightCharm config.

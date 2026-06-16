@@ -61,6 +61,7 @@ instead — handy if you want each plugin version pinned to a specific pack.)
 | Command | Description | Permission |
 |---------|-------------|------------|
 | `/flightcharm give [player] [minutes] [amount]` | Give charms of a chosen duration | `flightcharm.give` (op) |
+| `/flightcharm clear [player]` | Clear a player's flight time (lands them) | `flightcharm.clear` (op) |
 | `/flightcharm time` | Show your remaining flight time | — |
 | `/flightcharm reload` | Reload `config.yml` | `flightcharm.reload` (op) |
 
@@ -70,6 +71,7 @@ instead — handy if you want each plugin version pinned to a specific pack.)
 |------------|------------------|---------|
 | `flightcharm.use` | Activating (right-clicking) a charm | everyone |
 | `flightcharm.give` | Using `/flightcharm give` | op |
+| `flightcharm.clear` | Using `/flightcharm clear` | op |
 | `flightcharm.reload` | Using `/flightcharm reload` | op |
 
 `flightcharm.use` is open by default — revoke it from a group to stop them flying, or

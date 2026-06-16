@@ -190,9 +190,9 @@ public final class FlightCharm extends JavaPlugin implements Listener {
         }
     }
 
-    private void expire(Player player) {
-        UUID id = player.getUniqueId();
-        remaining.remove(id);
+    /** Resets a player's flight time, lands them safely, and removes the boss bar. */
+    private void clearFlight(Player player) {
+        remaining.remove(player.getUniqueId());
         player.getPersistentDataContainer().remove(remainingKey);
 
         if (isManaged(player)) {
@@ -205,8 +205,11 @@ public final class FlightCharm extends JavaPlugin implements Listener {
             }
             player.setAllowFlight(false);
         }
-
         clearBar(player);
+    }
+
+    private void expire(Player player) {
+        clearFlight(player);
         player.sendMessage(Component.text("✈ Flight time has run out.", NamedTextColor.RED));
     }
 
@@ -485,6 +488,32 @@ public final class FlightCharm extends JavaPlugin implements Listener {
                         + formatTime(seconds) + " each) to " + target.getName() + ".", NamedTextColor.GREEN));
                 return true;
             }
+            case "clear" -> {
+                if (!sender.hasPermission("flightcharm.clear")) {
+                    sender.sendMessage(Component.text("You don't have permission.", NamedTextColor.RED));
+                    return true;
+                }
+                Player target;
+                if (args.length >= 2) {
+                    target = Bukkit.getPlayerExact(args[1]);
+                    if (target == null) {
+                        sender.sendMessage(Component.text("Player not found: " + args[1], NamedTextColor.RED));
+                        return true;
+                    }
+                } else if (sender instanceof Player p) {
+                    target = p;
+                } else {
+                    sender.sendMessage(Component.text("Usage: /flightcharm clear <player>", NamedTextColor.RED));
+                    return true;
+                }
+                clearFlight(target);
+                sender.sendMessage(Component.text("Cleared flight time for " + target.getName() + ".",
+                        NamedTextColor.GREEN));
+                if (!target.equals(sender)) {
+                    target.sendMessage(Component.text("Your flight time has been cleared.", NamedTextColor.YELLOW));
+                }
+                return true;
+            }
             case "time" -> {
                 if (!(sender instanceof Player p)) {
                     sender.sendMessage(Component.text("Only players have flight time.", NamedTextColor.RED));
@@ -501,7 +530,7 @@ public final class FlightCharm extends JavaPlugin implements Listener {
                 return true;
             }
             default -> {
-                sender.sendMessage(Component.text("Usage: /flightcharm <give|time|reload> [player] [minutes] [amount]",
+                sender.sendMessage(Component.text("Usage: /flightcharm <give|clear|time|reload> [player] [minutes] [amount]",
                         NamedTextColor.YELLOW));
                 return true;
             }
