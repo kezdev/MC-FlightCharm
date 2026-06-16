@@ -64,6 +64,17 @@ instead — handy if you want each plugin version pinned to a specific pack.)
 | `/flightcharm time` | Show your remaining flight time | — |
 | `/flightcharm reload` | Reload `config.yml` | `flightcharm.reload` (op) |
 
+**Permissions**
+
+| Permission | What it controls | Default |
+|------------|------------------|---------|
+| `flightcharm.use` | Activating (right-clicking) a charm | everyone |
+| `flightcharm.give` | Using `/flightcharm give` | op |
+| `flightcharm.reload` | Using `/flightcharm reload` | op |
+
+`flightcharm.use` is open by default — revoke it from a group to stop them flying, or
+flip the default in your permissions plugin to make flight an opt-in perk.
+
 Each charm stores its own duration. `minutes` defaults to the config `flight-seconds`
 and accepts fractions (e.g. `0.5` = 30s). Examples:
 
