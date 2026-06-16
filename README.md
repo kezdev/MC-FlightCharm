@@ -93,14 +93,16 @@ recipe later if you want survival acquisition.)
 `plugins/FlightCharm/config.yml`:
 
 ```yaml
-flight-seconds: 600     # how long one charm grants (600 = 10 minutes)
-max-seconds: 3600       # cap on total stored flight time
-slow-fall-seconds: 8    # Slow Falling grace when flight ends
-flight-particle: CLOUD  # particle ring at your feet while flying; NONE to disable
+flight-seconds: 600                 # how long one charm grants (600 = 10 minutes)
+max-seconds: 3600                   # cap on total stored flight time
+slow-fall-seconds: 8               # Slow Falling grace when flight ends
+flight-particle: CLOUD             # particle ring at your feet while flying; NONE to disable
+activate-particle: TOTEM_OF_UNDYING # burst when a charm is used; NONE to disable
 ```
 
-`flight-particle` accepts any Bukkit particle name (e.g. `CLOUD`, `END_ROD`,
-`HAPPY_VILLAGER`, `SOUL_FIRE_FLAME`). Set it to `NONE` to turn the effect off.
+`flight-particle` and `activate-particle` accept any Bukkit particle name (e.g. `CLOUD`,
+`END_ROD`, `TOTEM_OF_UNDYING`, `HAPPY_VILLAGER`, `SOUL_FIRE_FLAME`). Set either to `NONE`
+to turn that effect off.
 
 Run `/flightcharm reload` after editing.
 

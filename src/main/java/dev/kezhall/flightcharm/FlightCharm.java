@@ -55,7 +55,8 @@ public final class FlightCharm extends JavaPlugin implements Listener {
     private int flightSeconds;
     private int maxSeconds;
     private int slowFallSeconds;
-    private Particle flightParticle;   // null = disabled
+    private Particle flightParticle;     // foot ring while flying; null = disabled
+    private Particle activateParticle;   // burst when a charm is used; null = disabled
 
     // Resource pack (optional custom texture)
     private boolean packEnabled;       // only true when enabled AND a url is set
@@ -118,6 +119,7 @@ public final class FlightCharm extends JavaPlugin implements Listener {
         maxSeconds = Math.max(flightSeconds, getConfig().getInt("max-seconds", 3600));
         slowFallSeconds = Math.max(0, getConfig().getInt("slow-fall-seconds", 8));
         flightParticle = parseParticle(getConfig().getString("flight-particle", "CLOUD"));
+        activateParticle = parseParticle(getConfig().getString("activate-particle", "TOTEM_OF_UNDYING"));
 
         packUrl = getConfig().getString("resource-pack.url", "").trim();
         packSha1 = getConfig().getString("resource-pack.sha1", "").trim();
@@ -229,6 +231,18 @@ public final class FlightCharm extends JavaPlugin implements Listener {
                 spawnFootParticles(player);
             }
         }
+    }
+
+    /** One-off celebratory burst around the player when a charm is activated. */
+    private void spawnActivateBurst(Player player) {
+        if (activateParticle == null) {
+            return;
+        }
+        Location loc = player.getLocation();
+        if (loc.getWorld() == null) {
+            return;
+        }
+        loc.getWorld().spawnParticle(activateParticle, loc.add(0, 1.0, 0), 30, 0.5, 0.8, 0.5, 0.08);
     }
 
     /** Draws a small rotating ring of particles at the player's feet. */
@@ -359,6 +373,7 @@ public final class FlightCharm extends JavaPlugin implements Listener {
         remaining.put(id, next);
         player.getPersistentDataContainer().set(remainingKey, PersistentDataType.INTEGER, next);
         player.setAllowFlight(true);
+        spawnActivateBurst(player);
 
         player.sendMessage(Component.text("✈ Flight charm activated! You now have "
                 + formatTime(next) + " of flight.", NamedTextColor.AQUA));
