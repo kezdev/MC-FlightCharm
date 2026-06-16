@@ -6,6 +6,13 @@ custom item texture via a small resource pack.
 
 By [kezdev](https://github.com/kezdev).
 
+
+
+https://github.com/user-attachments/assets/6f51aaa1-cfe9-48b4-b0ae-559e7e9d0e02
+
+
+
+
 ## What it does
 
 - Right-click a Flight Charm to gain flight. One charm = 10 minutes by default.
