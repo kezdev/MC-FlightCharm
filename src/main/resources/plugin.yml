@@ -11,6 +11,9 @@ commands:
     usage: /flightcharm <give|time|reload> [player] [minutes] [amount]
     aliases: [fc]
 permissions:
+  flightcharm.use:
+    description: Allows using (activating) a Flight Charm.
+    default: true
   flightcharm.give:
     description: Allows giving Flight Charms.
     default: op

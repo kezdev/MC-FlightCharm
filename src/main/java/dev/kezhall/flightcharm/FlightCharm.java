@@ -334,6 +334,12 @@ public final class FlightCharm extends JavaPlugin implements Listener {
 
         event.setCancelled(true); // never let it behave like a normal feather
 
+        if (!player.hasPermission("flightcharm.use")) {
+            player.sendActionBar(Component.text("You don't have permission to use Flight Charms.",
+                    NamedTextColor.RED));
+            return; // don't consume the charm
+        }
+
         if (!isManaged(player)) {
             player.sendActionBar(Component.text("You can already fly here.", NamedTextColor.YELLOW));
             return; // don't waste a charm in creative/spectator
